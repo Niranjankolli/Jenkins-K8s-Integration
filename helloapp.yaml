@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: helloapp
+      version: green
+  template:
+    metadata:
+      name: helloapp-pod
+      labels:
+        app: helloapp
+        version: green
+    spec:
+      containers:
+      - name: helloapp-container
+        image: niranjankolli/helloapp:latest
+        imagePullPolicy: Always
+        env:
+          - name: KUBECONFIG
+            value: "/opt/kubeconfig"
+        command: ["python3.8"]
+        args: ["/script/hello.py"]
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+          - name: script
+            mountPath: /script
+          - name: k8config
+            mountPath: /opt
+      volumes:
+        - name: script
+          configMap:
+            name: script
+        - name: k8config
+          configMap:
+            name: k8config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloapp-svc
+  labels:
+    app: helloapp
+spec:
+  selector:
+    app: helloapp
+    version: green
+  type: NodePort
+  ports:
+  - nodePort: 31113
+    port: 5000
+    targetPort: 5000
