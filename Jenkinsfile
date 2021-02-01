@@ -1,14 +1,14 @@
 pipeline {
     environment { 
         registry = "niranjankolli/helloapp"
-        registryCredential = 'dockerhub'
+        registryCredential = 'DockerHub'
         dockerImage = ''
     }
     agent any
     stages {
         stage('Cloning our Git') {
             steps {
-                git branch: 'main', credentialsId: 'gitlab', url: 'https://github.com/Niranjankolli/Jenkins-K8s-Integration.git'
+                git url:'https://github.com/Niranjankolli/Jenkins-K8s-Integration.git', branch:'main'
             }
         } 
         stage('Building our image') { 
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {                    
                     withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://10.128.130.84:6443']) {
-                        sh 'kubectl apply -f vaas.yaml'
+                        sh 'kubectl apply -f helloapp.yaml'
                     }
                 }                
             }
