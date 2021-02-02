@@ -31,7 +31,7 @@ pipeline {
         stage('Deploy app to K8s') {
             steps {
                 script {
-                    withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://10.128.130.84:6443']) {
+                    withKubeConfig([credentialsId: 'kubeconfig_lt', serverUrl: 'https://10.128.130.84:6443']) {
                         sh 'kubectl apply -f helloapp.yaml'
                     }
                 }                
